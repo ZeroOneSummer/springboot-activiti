@@ -1,0 +1,1 @@
+package com.act.activiti.service;/** * @author pen */public interface BaseService<T, K> {	void insert(T prama);		void delete(T prama);		void deleteByList(T prama);		void update(T pramarama);		K findByParam(T t);		K findAll();		K findListByParam(T t);}

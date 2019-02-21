@@ -1,0 +1,1 @@
+package com.act.activiti.dao;import com.act.activiti.entity.ActRequest;/** * @author pen */public interface ActRequestDao extends BaseDao<ActRequest, ActRequest> {}

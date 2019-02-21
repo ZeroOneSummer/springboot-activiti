@@ -1,0 +1,1 @@
+package com.act.activiti.dao;import com.act.activiti.entity.Membership;public interface MembershipDao {	Membership find(String userId);}

@@ -1,0 +1,1 @@
+package com.act.activiti.entity;import lombok.Data;/** * @author pen */@Datapublic class Membership {	private String userId;	private String groupId;}

@@ -1,0 +1,1 @@
+package com.act.activiti.dao;import com.act.activiti.entity.Users;/** * @author pen */public interface UsersDao extends BaseDao<Users, Users> {}
