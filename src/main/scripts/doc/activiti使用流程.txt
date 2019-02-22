@@ -2,8 +2,8 @@
 	开始 -- 学生发起申请 -- 班主任审批 -- 结束
 1>定义
 	模板：   请假流程 leave_step
-	用户：   zhangsan			   mrs_lee	
-    组：     学生申请 stu_apply	   老师审核 teach_audit
+	用户：   zhangsan		      mrs_lee	
+    	组：     学生申请 stu_apply	   老师审核 teach_audit
 2>修改leave_step.bpmn文件
 	<process id="leave_step" isClosed="false" isExecutable="true" name="请假流程" processType="None">
 		<startEvent id="_2" name="开始"/>
@@ -13,7 +13,7 @@
 		<sequenceFlow id="_6" sourceRef="_2" targetRef="_3"/>
 		<sequenceFlow id="_7" sourceRef="_3" targetRef="_4"/>
 		<sequenceFlow id="_8" sourceRef="_4" targetRef="_5"/>
-    </process>
+    	</process>
 3>表ACT_REQUEST添加定义数据
 	insert into ACT_REQUEST(
 		 `REQUEST_ID`, 	 	#请求ID
