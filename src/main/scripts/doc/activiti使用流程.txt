@@ -1,0 +1,106 @@
+1.修改 bpmn文件，定义审批流程关系  --对应表ACT_GE_BYTEARRAY
+	开始 -- 学生发起申请 -- 班主任审批 -- 结束
+1>定义
+	模板：   请假流程 leave_step
+	用户：   zhangsan			   mrs_lee	
+    组：     学生申请 stu_apply	   老师审核 teach_audit
+2>修改leave_step.bpmn文件
+	<process id="leave_step" isClosed="false" isExecutable="true" name="请假流程" processType="None">
+		<startEvent id="_2" name="开始"/>
+		<userTask activiti:exclusive="true" id="_3" name="学生发起申请" activiti:candidateGroups="stu_apply" />
+		<userTask activiti:exclusive="true" id="_4" name="班主任审批" activiti:candidateGroups="teach_audit" />
+		<endEvent id="_5" name="结束"/>
+		<sequenceFlow id="_6" sourceRef="_2" targetRef="_3"/>
+		<sequenceFlow id="_7" sourceRef="_3" targetRef="_4"/>
+		<sequenceFlow id="_8" sourceRef="_4" targetRef="_5"/>
+    </process>
+3>表ACT_REQUEST添加定义数据
+	insert into ACT_REQUEST(
+		 `REQUEST_ID`, 	 	#请求ID
+		  `REQUEST_TYPE`,	#请求类型【POST、GET】
+		  `REQUEST_URL`, 	#请求连接
+		  `REQUEST_PARAM`,	#请求参数
+		  `ADD_TIME`, 		#添加时间
+		  `UP_TIME`,		#修改时间
+		  `REMARK`, 		#备注
+		  `ADD_NAME`,		#添加人
+		  `REQ_NAME`,		#请求名称
+		  `KEY_NAME`,		#模板KEY
+		  `GET_ORDER`,		#请求序号
+		  `AUDIT_FLAGNO`	#防重复提交
+	) values(
+		1,
+		"post",
+		"http://localhost:8090/test",
+		"applyUser,isRequest,sTime,eTime,cause",
+		now(),
+		now(),
+		"请假流程",
+		"mrs_lee",
+		"请假申请",
+		"leave_step",
+		1,
+		""
+	)
+	
+2.添加用户及用户组（获取用户信息、获取用户列表信息、修改用户归属组、添加组信息、获取组信息列表）
+#添加用户组	--对应表ACT_ID_GROUP
+http://localhost:8090/addGroup
+{
+	"id": "stu_apply", 
+	"name": "学生申请",
+	"rev":1,
+	"type":true
+}
+
+{
+	"id": "teach_audit", 
+	"name": "老师审核",
+	"rev":2,
+	"type":true
+}
+#添加用户 	--对应表ACT_ID_MEMBERSHIP、ACT_ID_USER
+http://localhost:8090/addUsers
+{
+	"userName": "zhangsan",
+	"groupId": "stu_apply"
+}
+
+{
+	"userName": "mrs_lee",
+	"groupId": "teach_audit"
+}
+
+3.发起申请（获取我申请的记录）
+#发起申请	--对应表ACT_REQUEST、ACT_HI_ACTINST
+http://localhost:8090/addVac
+{
+	"userName": "zhangsan", 
+	"processDefineKey": "leave_step", 
+	"vaMap": { 	#待审批信息
+		"applyUser": "zhangsan",
+		"isRequest":true,
+		"sTime":"2019-01-01 09:00:00",
+		"eTime":"2019-01-02 18:00:00",
+		"cause":"感冒了"	
+	},
+	"reason": "请假申请"	
+}
+#获取我申请的记录(下一环审核后删除)
+http://localhost:8090/getMyVac?userName=zhangsan&processDefineKey=leave_step&page=1&limit=50
+
+4.获取我的待审批记录(审核后删除)
+http://localhost:8090/getMyAudit?userName=mrs_lee&processDefineKey=leave_step&page=1&limit=50
+
+5.确认审批（获取审批完成记录）
+#确认审批
+http://localhost:8090/passMyAudit
+{
+	"userName":"mrs_lee",
+	"taskId":"5020",			#填步骤4查询的id
+	"result":"同意",
+	"approvalStatus":true 
+}
+#获取审批完成记录
+http://localhost:8090/getMyVacRecord?userName=zhangsan&processDefineKey=leave_step&page=1&limit=50
+
